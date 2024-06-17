@@ -1,4 +1,4 @@
-## Hi there 👋
+## Repositório para Armazenamento e Demonstração dos projetos e trabalhos desempenhados durante a formação na faculdade da UNB.
 
 <!--
 **JoaoEduardoP/JoaoEduardoP** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
