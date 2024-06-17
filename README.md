@@ -20,7 +20,7 @@
 
 ![Git](https://img.shields.io/badge/-Git-333333?style=flat&logo=git)
 ![GitHub](https://img.shields.io/badge/-GitHub-333333?style=flat&logo=github)
-![GitHub Pages]([https://img.shields.io/badge/-GitHub-333333?style=flat&logo=github](https://img.shields.io/badge/GitHub%20Pages-222222.svg?style=for-the-badge&logo=GitHub-Pages&logoColor=white))
+![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222.svg?style=for-the-badge&logo=GitHub-Pages&logoColor=white)
 ![Docker](https://img.shields.io/badge/-Docker-333333?style=flat&logo=docker)
 
 **Ferramentas de desenvolvimento**
