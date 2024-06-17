@@ -61,6 +61,6 @@
 [![Yahoo!](https://img.shields.io/badge/Yahoo!-6001D2?style=for-the-badge&logo=Yahoo!&logoColor=white)](mailto:joaoeduardopereira@yahoo.com.br)
 [![Linkedin](https://img.shields.io/badge/-JoaoE-blue?style=flat-square&logo=Linkedin&logoColor=white&link=www.linkedin.com/in/joão-eduardo-pereira-rabelo-5a4147252)](www.linkedin.com/in/joão-eduardo-pereira-rabelo-5a4147252)
 [![Gmail Badge](https://img.shields.io/badge/-je.rabelo60@gmail.com-006bed?style=flat-square&logo=Gmail&logoColor=white&link=mailto:je.rabelo60@gmail.com)](mailto:je.rabelo60@gmail.com)
-[![Instagram Badge](https://img.shields.io/badge/-Instagram-e4405f?style=flat-square&logo=Instagram&logoColor=white)](https://instagram.com/iampavangandhi/)
+[![Instagram Badge](https://img.shields.io/badge/-Instagram-e4405f?style=flat-square&logo=Instagram&logoColor=white)](https://instagram.com/joaoed.rabelo/)
 [![GitHub](https://img.shields.io/github/followers/iuricode?label=follow&style=social)](https://github.com/JoaoEduardoP)
 
