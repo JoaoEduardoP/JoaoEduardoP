@@ -5,6 +5,10 @@
 - 🎓 Estudando Engenharia de Software na UNB ![]([https://avatars.githubusercontent.com/u/78875892?v=4](http://repositoriocovid19.unb.br/wp-content/uploads/2020/03/cropped-Logo_UnB_pequena-5.png)).
 - 🌱 Aprendendo mais sobre novas tecnologias.
 
+## Sobre este repositório
+
+- Neste repositório, irão encontrar meu portifólio, juntamente com documentos e projetos realizados durante minha graduação na Universidade de Brasília (UNB).
+
 ## Minhas Skills
 
 **Aplicações e dados**
