@@ -1,61 +1,71 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
-typedef long long ll;
-typedef ll T;
+typedef long long Variavel_L;
+typedef Variavel_L Variavel_T;
 
-T e = 0;
-ll N;
-ll* seg;
+Variavel_T f = 0;
+Variavel_L Total;
+Variavel_L *Segundo;
 
-ll op(ll a, ll b) { return a + b; }
-
-void assign(ll i, T v) {
-    i += N;
-    seg[i] = v;
-    for (i >>= 1; i; i >>= 1) seg[i] = op(seg[2 * i], seg[2 * i + 1]);
+Variavel_L O(Variavel_L a, Variavel_L b){
+    return a + b; 
 }
 
-T query(ll l, ll r) {
-    T la = e, ra = e;
-    l += N;
-    r += N;
+Variavel_T Pilha(Variavel_L l, Variavel_L r) {
+    Variavel_T la = f, ra = f;
+    l += Total;
+    r += Total;
 
     while (l <= r) {
-        if (l & 1) la = op(la, seg[l++]);
-        if (~r & 1) ra = op(seg[r--], ra);
+        if (l & 1) la = O(la, Segundo[l++]);
+        if (~r & 1) ra = O(Segundo[r--], ra);
         l >>= 1;
         r >>= 1;
     }
 
-    return op(la, ra);
+    return O(la, ra);
+}
+
+void Designar(Variavel_L i, Variavel_T v) {
+    i += Total;
+    Segundo[i] = v;
+    for (i >>= 1; i; i >>= 1) Segundo[i] = O(Segundo[2 * i], Segundo[2 * i + 1]);
 }
 
 int main() {
-    ll M;
-    scanf("%lld %lld", &N, &M);
+    Variavel_L q;
 
-    seg = calloc(N + N, sizeof(ll));
+    scanf("%lld %lld", &Total, &q);
 
-    ll el;
-    for (ll i = 0; i < N; i++) {
-        scanf("%lld", &el);
-        assign(i, el);
+    Segundo = calloc(Total + Total, sizeof(Variavel_L));
+
+    Variavel_L arr[Total];
+    for (Variavel_L i = 0; i < Total; i++) {
+        scanf(" %lld", &arr[i]);
+
+        Designar(i, arr[i]);
     }
 
-    ll tipo, A, B, X, K;
-    for (ll i = 0; i < M; i++) {
-        scanf("%lld", &tipo);
-        if (tipo == 1) {
-            scanf("%lld %lld", &K, &X);
-            assign(K - 1, X);
-        } else {
-            scanf("%lld %lld", &A, &B);
-            printf("%lld\n", query(A - 1, B - 1));
+
+    for (Variavel_L i = 0; i < q; i++) {
+        Variavel_L type;
+        scanf("%lld", &type);
+        if (type == 1) {
+            Variavel_L k, x;
+            scanf("%lld %lld", &k, &x);
+
+            Designar(k-1, x);
+        } else if (type == 2) {
+            Variavel_L a, b;
+            scanf("%lld %lld", &a, &b);
+
+            Variavel_L result = Pilha(a-1, b-1);
+            printf("%lld\n", result);
         }
     }
 
-    free(seg);
+    free(Segundo);
+
     return 0;
 }

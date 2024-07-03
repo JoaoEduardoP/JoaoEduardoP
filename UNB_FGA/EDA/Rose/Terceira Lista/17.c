@@ -1,70 +1,71 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Definição da estrutura de carta
 typedef struct {
-    int *cartas; // Array para armazenar as cartas
-    int tamanho; // Tamanho do array
-} PilhaCartas;
+    int *data;
+    int Tamanho;
+    int Espaco;
+    int Proximo;
+    int Anterior;
+} Fila;
 
-// Função para inicializar a pilha de cartas
-PilhaCartas inicializar_pilha(int n) {
-    PilhaCartas pilha;
-    pilha.cartas = malloc(n * sizeof(int));
-    pilha.tamanho = 0;
-
-    // Inicializa a pilha com os números de 1 até n
-    for (int i = 0; i < n; i++) {
-        pilha.cartas[i] = i + 1;
-        pilha.tamanho++;
-    }
-    return pilha;
+int Vazio(Fila* Filas) {
+    return (Filas->Tamanho == 0);
 }
 
-// Função para descartar uma carta da pilha
-void descartar_carta(PilhaCartas *pilha) {
-    pilha->tamanho--;
-    
-    // Descarta a carta do topo
-    for (int i = 0; i < pilha->tamanho; i++) {
-        if (pilha->cartas[i+1] != 0)
-        {
-            pilha->cartas[i] = pilha->cartas[i + 1];
-        }
-    }
+Fila* Cria_Fila(int Espaco) {
+    Fila* Filas = (Fila*)malloc(sizeof(Fila));
 
-    // Move a carta do topo para o final da pilha
-    pilha->cartas[pilha->tamanho] = pilha->cartas[0];
-    
-    // Descarta a carta do topo novamente para corrigir o array
-    for (int i = 0; i < pilha->tamanho; i++) {
-        if (pilha->cartas[i+1] != 0)
-        {
-            pilha->cartas[i] = pilha->cartas[i + 1];
-        }
-    }
+    Filas->Espaco = Espaco;
+    Filas->Proximo = Filas->Tamanho = 0;
+    Filas->Anterior = Espaco - 1;
+    Filas->data = (int*)malloc(Filas->Espaco * sizeof(int));
+
+    return Filas;
 }
 
-// Função para executar o jogo de cartas
-void jogar_cartas(int n) {
-    PilhaCartas Pilha = inicializar_pilha(n);
-    printf("Cartas descartadas: ");
-    while (Pilha.tamanho > 1) {
-        printf("%d", Pilha.cartas[0]);
-        if (Pilha.tamanho > 2) {
-            printf(", ");
-        }
-        descartar_carta(&Pilha);
-    }
+void Insere_Fila(Fila* Filas, int Valor) {
+    Filas->Anterior = (Filas->Anterior + 1) % Filas->Espaco;
+    Filas->data[Filas->Anterior] = Valor;
+    Filas->Tamanho++;
+}
 
-    // Imprime a carta restante
-    printf("\nCarta restante: %d\n", Pilha.cartas[0]);
-    free(Pilha.cartas);
+int Retira_Fila(Fila* Filas) {
+    int Valor = Filas->data[Filas->Proximo];
+    Filas->Proximo = (Filas->Proximo + 1) % Filas->Espaco;
+    Filas->Tamanho--;
+
+    return Valor;
 }
 
 int main() {
     int n;
     scanf("%d", &n);
-    jogar_cartas(n);
+
+    Fila* Filas = Cria_Fila(n);
+
+    for (int i = 1; i <= n; i++) {
+        Insere_Fila(Filas, i);
+    }
+
+    printf("Cartas descartadas: ");
+
+    while (Filas->Tamanho > 1) {
+
+        int Descartado = Retira_Fila(Filas);
+        printf("%d", Descartado);
+        if (Filas->Tamanho > 1) {
+            printf(", ");
+        }
+
+        int Retirado = Retira_Fila(Filas);
+        Insere_Fila(Filas, Retirado);
+    }
+
+    printf("\nCarta restante: %d\n", Filas->data[Filas->Proximo] );
+
+    free(Filas->data);
+    free(Filas);
+
     return 0;
 }

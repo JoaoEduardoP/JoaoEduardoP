@@ -2,81 +2,82 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_SIZE 100001
-
 typedef struct Node {
-    char c;
-    struct Node* next;
+    int   Topo;
+    char *Dados;
+    int   Tamanho;
+    int   Espaco;
 } Node;
 
-Node* createNode(char c) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    newNode->c = c;
-    newNode->next = NULL;
-    return newNode;
+void Inicia_Pilha(Node *p) {
+    p->Topo = 0;
+    p->Tamanho = 1;
+    p->Dados = malloc(p->Tamanho * sizeof(char));
+    p->Espaco = p->Tamanho;
 }
 
-void push(Node** top, char c) {
-    Node* newNode = createNode(c);
-    newNode->next = *top;
-    *top = newNode;
-}
-
-char pop(Node** top) {
-    if (*top == NULL) {
-        return '\0';
+void Empilha(Node *p, char x) {
+    if (p->Topo == p->Espaco) {
+        p->Espaco *= 2;
+        p->Dados = realloc(p->Dados, p->Espaco * sizeof(char));
     }
-    Node* temp = *top;
-    *top = (*top)->next;
-    char c = temp->c;
-    free(temp);
-    return c;
+    p->Dados[p->Topo++] = x;
 }
 
-char validarTexto(char** texto, int n) {
-    Node* pilha = NULL;
+int Vazia(Node *p) {
+    return p->Topo == 0;
+}
 
-    for (int i = 0; i < n; i++) {
-        int tamanho = strlen(texto[i]);
+void Desempilha(Node *p) {
+    if (p->Topo > 0) {
+        p->Topo--;
+    }
+}
 
-        for (int j = 0; j < tamanho; j++) {
-            if (texto[i][j] == '*' || texto[i][j] == '/' || texto[i][j] == '_') {
-                push(&pilha, texto[i][j]);
-            } else if (texto[i][j] == '*' || texto[i][j] == '/' || texto[i][j] == '_') {
-                char topo = pop(&pilha);
-                if (texto[i][j] != topo) {
-                    return 'E'; 
-                }
+void Formada(Node *p, char *Caracteres) {
+    for (int i = 0; Caracteres[i] != '\0'; i++) {
+        if (Caracteres[i] == '*') {
+            if (p->Topo == 0 || p->Dados[p->Topo - 1] != '*' || (p->Topo > 0 && p->Dados[p->Topo - 1] == '/')) {
+                Empilha(p, '*');
+            } else {
+                Desempilha(p);
+            }
+        } else if (Caracteres[i] == '/') {
+            if (p->Topo == 0 || p->Dados[p->Topo - 1] != '/' || (p->Topo > 0 && p->Dados[p->Topo - 1] == '*')) {
+                Empilha(p, '/');
+            } else {
+                Desempilha(p);
+            }
+        } else if (Caracteres[i] == '_') {
+            if (p->Topo == 0 || p->Dados[p->Topo - 1] != '_') {
+                Empilha(p, '_');
+            } else {
+                Desempilha(p);
             }
         }
     }
-
-    if (pilha != NULL) {
-        return 'E';
-    }
-
-    return 'C';
 }
 
 int main() {
-    int n;
-    scanf("%d", &n);
-    getchar();
+    Node Pilha;
+    Inicia_Pilha(&Pilha);
 
-    char **texto = (char**)malloc(n * sizeof(char*));
-    for (int i = 0; i < n; i++) {
-        texto[i] = (char*)malloc(MAX_SIZE * sizeof(char));
-        fgets(texto[i], MAX_SIZE, stdin);
-        texto[i][strcspn(texto[i], "\n")] = '\0';
+    int N;
+    scanf("%d\n", &N);
+
+    char Palavras[100001];
+    for (int i = 0; i < N; i++) {
+        Palavras[strcspn(Palavras, "\n")] = '\0';
+        Formada(&Pilha, Palavras);
     }
 
-    char resultado = validarTexto(texto, n);
-    printf("%c\n", resultado);
-
-    for (int i = 0; i < n; i++) {
-        free(texto[i]);
+    if (Vazia(&Pilha)) {
+        printf("C\n");
+    } else {
+        printf("E\n");
     }
-    free(texto);
+
+    free(Pilha.Dados);
 
     return 0;
 }

@@ -1,30 +1,22 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct celula {
     int dado;
     struct celula *prox;
 } celula;
 
-celula *enfileira(celula *f, int x) {
-    celula *nova = (celula *)malloc(sizeof(celula));
-    if (nova == NULL) {
-        return NULL; 
-    }
+celula *enfileira (celula *f, int x){
 
-    nova->dado = x;
-    nova->prox = NULL;
+    celula *Celulas;
+    Celulas = malloc (sizeof (celula));
+    if(Celulas == NULL){
+        return NULL;
+    } 
 
-    if (f == NULL) {
-        return nova;
-    }
+    Celulas->prox = f->prox;
+    f->prox = Celulas;
+    f->dado = x;
 
-    celula *atual = f;
-    while (atual->prox != NULL) {
-        atual = atual->prox;
-    }
-
-    atual->prox = nova;
-
-    return f;
+    return Celulas;
 }

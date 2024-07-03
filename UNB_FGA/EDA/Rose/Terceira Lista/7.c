@@ -7,37 +7,41 @@ typedef struct celula {
 } celula;
 
 void enfileira(celula **f, int x) {
-    celula *nova = (celula *)malloc(sizeof(celula));
-    if (nova == NULL) {
-        return;
-    }
-    nova->dado = x;
+    celula *Celulas = (celula *)malloc(sizeof(celula));
+
+    Celulas->dado = x;
+    Celulas->prox = NULL;
 
     if (*f == NULL) {
-        nova->prox = nova;
-        *f = nova;
-    } else {
-        nova->prox = (*f)->prox;
-        (*f)->prox = nova;
-        *f = nova; 
+        *f = (celula *)malloc(sizeof(celula));
+        (*f)->prox = *f;
     }
+
+    celula *Auxiliar = *f;
+
+    while (Auxiliar->prox != *f) {
+        Auxiliar = Auxiliar->prox;
+    }
+    
+    Auxiliar->prox = Celulas;
+    Celulas->prox = *f;
 }
 
 int desenfileira(celula *f, int *y) {
-    if (f == NULL) {
+    if (f->prox == f || f == NULL) {
         return 0;
     }
 
-    celula *remover = f->prox;
-    *y = remover->dado;
+    celula *Primeiro = f->prox;
+    *y = Primeiro->dado;
 
-    if (remover == f) {
-        free(remover);
-        f = NULL;
-    } else {
-        f->prox = remover->prox;
-        free(remover);
+    if (Primeiro == f) {
+        f->prox = f;
+    } 
+    else {
+        f->prox = Primeiro->prox;
     }
-    
+    free(Primeiro);
     return 1;
 }
+
