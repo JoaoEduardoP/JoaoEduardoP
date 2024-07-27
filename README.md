@@ -65,7 +65,7 @@
 ## Onde me encontrar
 
 [![Yahoo!](https://img.shields.io/badge/Yahoo!-6001D2?style=for-the-badge&logo=Yahoo!&logoColor=white)](mailto:joaoeduardopereira@yahoo.com.br)
-[![Linkedin](https://img.shields.io/badge/VSCO-000000.svg?style=for-the-badge&logo=VSCO&logoColor=white)](https://www.linkedin.com/in/joão-eduardo-pereira-rabelo-5a4147252)
+[![Linkedin](https://img.shields.io/badge/LinkedIn-0A66C2.svg?style=for-the-badge&logo=LinkedIn&logoColor=white)](https://www.linkedin.com/in/joão-eduardo-pereira-rabelo-5a4147252)
 [![Gmail Badge](https://img.shields.io/badge/Gmail-EA4335.svg?style=for-the-badge&logo=Gmail&logoColor=white)](mailto:je.rabelo60@gmail.com)
 [![Instagram Badge](https://img.shields.io/badge/Instagram-E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://instagram.com/joaoed.rabelo/)
 [![GitHub](https://img.shields.io/badge/GitHub-181717.svg?style=for-the-badge&logo=GitHub&logoColor=white)](https://github.com/JoaoEduardoP)
