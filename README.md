@@ -19,6 +19,8 @@
 ![MySQL](https://img.shields.io/badge/-MySQL-333333?style=flat&logo=mysql)
 ![Jest](https://img.shields.io/badge/-Jest-333333?style=flat&logo=jest)
 ![JavaScript](https://img.shields.io/badge/-JavaScript-333333?style=flat&logo=javascript)
+![Python](https://img.shields.io/badge/Python-3776AB.svg?style=for-the-badge&logo=Python&logoColor=white)
+![pytest](https://img.shields.io/badge/Pytest-0A9EDC.svg?style=for-the-badge&logo=Pytest&logoColor=white)
 
 **DevOps**
 
