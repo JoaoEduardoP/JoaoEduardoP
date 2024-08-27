@@ -1,0 +1,2 @@
+SELECT * FROM contracts_energybill;
+UPDATE contracts_energybill SET date = '2024-01-01' WHERE id = 40;
