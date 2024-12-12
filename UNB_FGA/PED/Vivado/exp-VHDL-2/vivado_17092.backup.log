@@ -1,0 +1,24 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Thu Dec 12 12:54:13 2024
+# Process ID: 17092
+# Current directory: C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent19352 C:\Users\joaoe\Desktop\Faculdade\Materias\PED\Vivado\exp-VHDL-2\exp-VHDL-2.xpr
+# Log file: C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2/vivado.log
+# Journal file: C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2/exp-VHDL-2.xpr
+INFO: [Project 1-313] Project file moved from 'C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL2' since last save.
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2018.3/data/ip'.
+open_project: Time (s): cpu = 00:00:11 ; elapsed = 00:00:06 . Memory (MB): peak = 766.496 ; gain = 137.797
+open_hw
+update_compile_order -fileset sources_1
+exit
+INFO: [Common 17-206] Exiting Vivado at Thu Dec 12 12:56:39 2024...

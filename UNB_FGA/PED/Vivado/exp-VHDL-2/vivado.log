@@ -1,0 +1,22 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Thu Dec 12 12:58:29 2024
+# Process ID: 4344
+# Current directory: C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent20104 C:\Users\joaoe\Desktop\Faculdade\Materias\PED\Vivado\exp-VHDL-2\exp-VHDL-2.xpr
+# Log file: C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2/vivado.log
+# Journal file: C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2/exp-VHDL-2.xpr
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2018.3/data/ip'.
+update_compile_order -fileset sources_1
+reorder_files -fileset constrs_1 -before C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2/exp-VHDL-2.srcs/constrs_1/imports/Vivado/Master.xdc C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/exp-VHDL-2/exp-VHDL-2.srcs/constrs_1/imports/Vivado/Master.xdc
+exit
+INFO: [Common 17-206] Exiting Vivado at Thu Dec 12 13:00:07 2024...

@@ -1,0 +1,1 @@
+Repositório com a documentação e aplicação completa na seguinte URL: https://github.com/mdsreq-fga-unb/2024.2-T01-FamintosBurguer/tree/main

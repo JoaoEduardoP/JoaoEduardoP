@@ -1,0 +1,7 @@
+set_property SRC_FILE_INFO {cfile:C:/Users/joaoe/Desktop/Faculdade/Materias/PED/Vivado/Projeto_0_1/Projeto_0_1.srcs/constrs_1/imports/Vivado/Master.xdc rfile:../../../Projeto_0_1.srcs/constrs_1/imports/Vivado/Master.xdc id:1} [current_design]
+set_property src_info {type:XDC file:1 line:12 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN V17 [get_ports {A}]
+set_property src_info {type:XDC file:1 line:14 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN V16 [get_ports {B}]
+set_property src_info {type:XDC file:1 line:47 export:INPUT save:INPUT read:READ} [current_design]
+set_property PACKAGE_PIN U16 [get_ports {S}]
