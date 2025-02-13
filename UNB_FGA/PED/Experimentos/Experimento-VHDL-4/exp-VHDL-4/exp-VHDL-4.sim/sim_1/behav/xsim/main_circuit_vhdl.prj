@@ -1,0 +1,8 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../exp-VHDL-4.srcs/sources_1/new/FlipFlop-design.vhd" \
+"../../../../exp-VHDL-4.srcs/sources_1/new/clock_divider.vhd" \
+"../../../../exp-VHDL-4.srcs/sources_1/new/main_circuit.vhd" \
+
+# Do not sort compile order
+nosort
