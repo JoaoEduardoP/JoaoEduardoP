@@ -1,0 +1,13 @@
+.data
+    msg: .string "Ola Mundo\n"
+
+.text
+main:
+    # Imprime a string "Ola Mundo\n"
+    li a7, 4          # syscall 4 = print_string
+    la a0, msg        # carrega o endereço da string em a0
+    ecall
+
+    # return 0 (encerra o programa com sucesso)
+    li a7, 10         # syscall 10 = exit
+    ecall

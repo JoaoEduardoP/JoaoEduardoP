@@ -1,0 +1,46 @@
+.data
+    str_nl: .asciz "\n"
+
+.text
+main:
+    # ── Lê a ─────────────────────────────────────────────────
+    li   a7, 5
+    ecall
+    mv   s0, a0          # s0 = a (32 bits)
+    li   a0, 0           # limpa a0
+
+    # ── Caso especial: a == 0 → nlz = 32 ─────────────────────
+    bne  s0, zero, loop_init
+    li   s1, 32
+    j    print
+
+loop_init:
+    li   s1, 0           # s1 = contador de zeros
+    li   s2, 31          # s2 = índice do bit atual (começa no 31)
+
+    # ── Loop: testa cada bit do 31 ao 0 ──────────────────────
+loop:
+    # Desloca a valor s2 posições à direita e verifica bit 0
+    srl  t0, s0, s2      # t0 = s0 >> s2
+    andi t0, t0, 1       # t0 = bit na posição s2
+    bne  t0, zero, print # se bit == 1, para e imprime
+
+    addi s1, s1, 1       # incrementa contador
+    addi s2, s2, -1      # decrementa índice
+    bge  s2, zero, loop  # continua se s2 >= 0
+
+    # ── Impressão do resultado ────────────────────────────────
+print:
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+    li   a7, 1
+    mv   a0, s1
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── Exit ─────────────────────────────────────────────────
+    li   a7, 10
+    ecall

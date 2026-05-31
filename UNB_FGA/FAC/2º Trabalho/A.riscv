@@ -1,0 +1,146 @@
+.data
+    str_add:  .asciz "ADD: "
+    str_sub:  .asciz "SUB: "
+    str_and:  .asciz "AND: "
+    str_or:   .asciz "OR: "
+    str_xor:  .asciz "XOR: "
+    str_mask: .asciz "MASK: "
+    str_sll:  .asciz "SLL("
+    str_srl:  .asciz "SRL("
+    str_col:  .asciz "): "
+    str_nl:   .asciz "\n"
+
+.text
+main:
+    # ── Lê a, b, c primeiro — sem nenhuma outra syscall antes ─
+    li   a7, 5
+    ecall
+    mv   s0, a0          # s0 = a
+
+    li   a7, 5
+    ecall
+    mv   s1, a0          # s1 = b
+
+    li   a7, 5
+    ecall
+    mv   s2, a0          # s2 = c
+
+    # ── Quebra de linha após as entradas ─────────────────────
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+    li   a0, 0           # limpa a0 para não vazar lixo nas impressões
+
+    # ── Pré-calcula tudo antes de imprimir ───────────────────
+    add  s3, s0, s1      # s3 = ADD
+    sub  s4, s0, s1      # s4 = SUB
+    and  s5, s0, s1      # s5 = AND
+    or   s6, s0, s1      # s6 = OR
+    xor  s7, s0, s1      # s7 = XOR
+    andi s8, s2, 31      # s8 = MASK (m)
+    sll  s9, s0, s8      # s9 = SLL (32 bits naturais do RISC-V, sem truncar)
+    srl  s10, s1, s8     # s10 = SRL
+
+    # ── ADD ──────────────────────────────────────────────────
+    li   a7, 4
+    la   a0, str_add
+    ecall
+    li   a7, 1
+    mv   a0, s3
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── SUB ──────────────────────────────────────────────────
+    li   a7, 4
+    la   a0, str_sub
+    ecall
+    li   a7, 1
+    mv   a0, s4
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── AND ──────────────────────────────────────────────────
+    li   a7, 4
+    la   a0, str_and
+    ecall
+    li   a7, 1
+    mv   a0, s5
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── OR ───────────────────────────────────────────────────
+    li   a7, 4
+    la   a0, str_or
+    ecall
+    li   a7, 1
+    mv   a0, s6
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── XOR ──────────────────────────────────────────────────
+    li   a7, 4
+    la   a0, str_xor
+    ecall
+    li   a7, 1
+    mv   a0, s7
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── MASK ─────────────────────────────────────────────────
+    li   a7, 4
+    la   a0, str_mask
+    ecall
+    li   a7, 1
+    mv   a0, s8
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── SLL(m): resultado ────────────────────────────────────
+    li   a7, 4
+    la   a0, str_sll
+    ecall
+    li   a7, 1
+    mv   a0, s8
+    ecall
+    li   a7, 4
+    la   a0, str_col
+    ecall
+    li   a7, 1
+    mv   a0, s9
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── SRL(m): resultado ────────────────────────────────────
+    li   a7, 4
+    la   a0, str_srl
+    ecall
+    li   a7, 1
+    mv   a0, s8
+    ecall
+    li   a7, 4
+    la   a0, str_col
+    ecall
+    li   a7, 1
+    mv   a0, s10
+    ecall
+    li   a7, 4
+    la   a0, str_nl
+    ecall
+
+    # ── Exit ─────────────────────────────────────────────────
+    li   a7, 10
+    ecall
