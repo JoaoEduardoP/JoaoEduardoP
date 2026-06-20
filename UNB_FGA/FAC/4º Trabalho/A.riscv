@@ -1,0 +1,253 @@
+.data
+inv_pow10:   .word 1677721,167772,16777,1677,167,16,1,0
+gamma_const: .word 9689389
+one_const:   .word 16777216
+eps_const:   .word 17
+
+buffer:      .space 20
+output_str:  .asciz "0."
+
+.text
+.globl main
+
+main:
+    la a0, buffer
+    li a1,20
+    li a7,8
+    ecall
+
+    call parse_fixed
+    mv s0,a0
+
+    la t0,gamma_const
+    lw s1,0(t0)
+
+    la t0,one_const
+    lw s2,0(t0)
+
+    la t0,eps_const
+    lw s3,0(t0)
+
+    mv a0,s0
+    mv a1,s1
+    call smul_fixed
+
+    call exp_taylor
+
+    mv a1,a0
+    mv a0,s0
+    call smul_fixed
+
+    mv s4,a0
+
+    li s5,1
+
+
+loop:
+    mv a0,s0
+    slli a0,a0,24
+    divu a2,a0,s5
+
+    add a3,s2,a2
+
+    sub a4,zero,a2
+
+    mv a0,a4
+    call exp_taylor
+
+    mv a1,a0
+    mv a0,a3
+    call smul_fixed
+
+    mv a5,a0
+
+    mv a0,s4
+    mv a1,a5
+    call smul_fixed
+
+    mv a6,a0
+
+    sub t0,a6,s4
+
+    bgez t0,diff_ok
+    sub t0,zero,t0
+
+diff_ok:
+    bleu t0,s3,done
+
+    mv s4,a6
+    addi s5,s5,1
+
+    li t1,2000
+    blt s5,t1,loop
+
+
+done:
+    mv a0,s4
+    call print_fixed
+
+    li a7,10
+    ecall
+
+
+parse_fixed:
+    la t0,buffer
+    li t1,46
+
+find_dot:
+    lb t2,0(t0)
+    beq t2,t1,found_dot
+    addi t0,t0,1
+    j find_dot
+
+found_dot:
+    addi t0,t0,1
+    li t3,0
+    la t4,inv_pow10
+
+parse_loop:
+    lb t2,0(t0)
+
+    li t5,48
+    blt t2,t5,parse_end
+
+    li t5,57
+    bgt t2,t5,parse_end
+
+    addi t2,t2,-48
+
+    lw t5,0(t4)
+    beqz t5,parse_end
+
+    mul t6,t2,t5
+    add t3,t3,t6
+
+    addi t4,t4,4
+    addi t0,t0,1
+
+    j parse_loop
+
+parse_end:
+    mv a0,t3
+    ret
+
+
+smul_fixed:
+    mulh t0,a0,a1
+    mul t1,a0,a1
+
+    slli t2,t0,8
+    srli t3,t1,24
+
+    or a0,t2,t3
+    ret
+
+
+exp_taylor:
+
+    addi sp,sp,-16
+
+    sw ra,12(sp)
+    sw s0,8(sp)
+    sw s1,4(sp)
+    sw s2,0(sp)
+
+
+    mv s0,a0              # x
+
+
+    la t0,one_const
+    lw s1,0(t0)           # ONE
+
+
+    mv s2,s1              # termo = 1
+
+    mv t1,s1              # soma = 1
+
+
+    li t2,1               # k
+
+
+    la t0,eps_const
+    lw t3,0(t0)
+
+
+exp_loop:
+    mulh a0,s2,s0
+    mul a1,s2,s0
+
+    slli a0,a0,8
+    srli a1,a1,24
+
+    or s2,a0,a1
+
+    div s2,s2,t2
+
+    add t1,t1,s2
+
+    mv a0,s2
+
+    bgez a0,test_term
+    sub a0,zero,a0
+
+test_term:
+    bleu a0,t3,exp_end
+
+    addi t2,t2,1
+
+    li t4,30
+    blt t2,t4,exp_loop
+
+
+exp_end:
+    mv a0,t1
+
+    lw s2,0(sp)
+    lw s1,4(sp)
+    lw s0,8(sp)
+    lw ra,12(sp)
+
+    addi sp,sp,16
+
+    ret
+
+
+print_fixed:
+    mv t0,a0
+
+    la a0,output_str
+    li a7,4
+    ecall
+
+    li t1,6
+
+    la t2,one_const
+    lw t3,0(t2)
+
+
+print_loop:
+    li t5,10
+
+    mul t4,t0,t5
+
+    divu t6,t4,t3
+
+    remu t0,t4,t3
+
+    addi a0,t6,48
+
+    li a7,11
+    ecall
+
+    addi t1,t1,-1
+
+    beqz t0,print_newline
+    bnez t1,print_loop
+
+
+print_newline:
+    li a0,10
+    li a7,11
+    ecall
+
+    ret
