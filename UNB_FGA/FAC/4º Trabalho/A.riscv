@@ -1,253 +1,151 @@
-.data
-inv_pow10:   .word 1677721,167772,16777,1677,167,16,1,0
-gamma_const: .word 9689389
-one_const:   .word 16777216
-eps_const:   .word 17
+# ============================================================
+# Função Zeta de Riemann - RISC-V (RV32IMF) para RARS
+# Saída formatada como X.XXXX (4 casas decimais fixas) + \n
+# ============================================================
 
-buffer:      .space 20
-output_str:  .asciz "0."
+.data
+epsilon: .float 1e-6
+one:     .float 1.0
+ten_mil: .float 10000.0
+ponto:   .asciz "."
+newline: .asciz "\n"
 
 .text
 .globl main
 
 main:
-    la a0, buffer
-    li a1,20
-    li a7,8
+    # --- Lê o inteiro s ---
+    li   a7, 5          # syscall 5 = read_int
     ecall
+    mv   s0, a0         # s0 = s
 
-    call parse_fixed
-    mv s0,a0
+    li   t0, 1          # t0 = n = 1
+    fcvt.s.w fs0, x0     # fs0 = zeta = 0.0
 
-    la t0,gamma_const
-    lw s1,0(t0)
+    la   t3, one
+    flw  ft0, 0(t3)      # ft0 = 1.0
 
-    la t0,one_const
-    lw s2,0(t0)
-
-    la t0,eps_const
-    lw s3,0(t0)
-
-    mv a0,s0
-    mv a1,s1
-    call smul_fixed
-
-    call exp_taylor
-
-    mv a1,a0
-    mv a0,s0
-    call smul_fixed
-
-    mv s4,a0
-
-    li s5,1
-
+    la   t4, epsilon
+    flw  ft1, 0(t4)      # ft1 = epsilon
 
 loop:
-    mv a0,s0
-    slli a0,a0,24
-    divu a2,a0,s5
+    fcvt.s.w fa0, t0
+    mv   a0, s0
+    jal  fpow             # fa0 = n^s
 
-    add a3,s2,a2
+    fdiv.s fa1, ft0, fa0  # termo = 1/n^s
 
-    sub a4,zero,a2
+    # --- Guarda contra NaN/Inf (overflow de n^s para s grande) ---
+    feq.s t5, fa1, fa1     # t5 = 1 se fa1 NÃO é NaN, 0 se for NaN
+    beqz  t5, loop_end      # se for NaN, encerra o loop imediatamente
 
-    mv a0,a4
-    call exp_taylor
+    fadd.s fs0, fs0, fa1  # zeta += termo
 
-    mv a1,a0
-    mv a0,a3
-    call smul_fixed
+    fle.s t1, fa1, ft1
+    bnez t1, loop_end
 
-    mv a5,a0
+    addi t0, t0, 1
+    j    loop
 
-    mv a0,s4
-    mv a1,a5
-    call smul_fixed
+loop_end:
+    # --- Correção de cauda ---
+    fcvt.s.w fa0, t0
+    addi a0, s0, -1
+    jal  fpow             # fa0 = n^(s-1)
 
-    mv a6,a0
+    fdiv.s fa1, ft0, fa0   # n^(1-s)
 
-    sub t0,a6,s4
+    # --- Guarda contra NaN/Inf na correção também ---
+    feq.s t5, fa1, fa1
+    beqz  t5, skip_correcao
 
-    bgez t0,diff_ok
-    sub t0,zero,t0
+    addi t2, s0, -1
+    fcvt.s.w fa2, t2
+    fdiv.s fa1, fa1, fa2   # correção
+    fadd.s fs0, fs0, fa1   # zeta += correção
 
-diff_ok:
-    bleu t0,s3,done
+skip_correcao:
+    # ------------------------------------------------------
+    # --- Formatação: imprime "intpart.ffff\n" ---
+    # ------------------------------------------------------
+    la   t5, ten_mil
+    flw  ft2, 0(t5)        # ft2 = 10000.0
+    fmul.s fa0, fs0, ft2   # fa0 = zeta * 10000
 
-    mv s4,a6
-    addi s5,s5,1
+    fcvt.w.s a0, fa0, rne  # a0 = round(zeta*10000)  -> inteiro
 
-    li t1,2000
-    blt s5,t1,loop
+    li   t6, 10000
+    div  t1, a0, t6        # t1 = parte inteira
+    rem  t2, a0, t6        # t2 = parte fracionária (0..9999)
 
-
-done:
-    mv a0,s4
-    call print_fixed
-
-    li a7,10
+    # --- imprime parte inteira ---
+    mv   a0, t1
+    li   a7, 1             # print_int
     ecall
 
-
-parse_fixed:
-    la t0,buffer
-    li t1,46
-
-find_dot:
-    lb t2,0(t0)
-    beq t2,t1,found_dot
-    addi t0,t0,1
-    j find_dot
-
-found_dot:
-    addi t0,t0,1
-    li t3,0
-    la t4,inv_pow10
-
-parse_loop:
-    lb t2,0(t0)
-
-    li t5,48
-    blt t2,t5,parse_end
-
-    li t5,57
-    bgt t2,t5,parse_end
-
-    addi t2,t2,-48
-
-    lw t5,0(t4)
-    beqz t5,parse_end
-
-    mul t6,t2,t5
-    add t3,t3,t6
-
-    addi t4,t4,4
-    addi t0,t0,1
-
-    j parse_loop
-
-parse_end:
-    mv a0,t3
-    ret
-
-
-smul_fixed:
-    mulh t0,a0,a1
-    mul t1,a0,a1
-
-    slli t2,t0,8
-    srli t3,t1,24
-
-    or a0,t2,t3
-    ret
-
-
-exp_taylor:
-
-    addi sp,sp,-16
-
-    sw ra,12(sp)
-    sw s0,8(sp)
-    sw s1,4(sp)
-    sw s2,0(sp)
-
-
-    mv s0,a0              # x
-
-
-    la t0,one_const
-    lw s1,0(t0)           # ONE
-
-
-    mv s2,s1              # termo = 1
-
-    mv t1,s1              # soma = 1
-
-
-    li t2,1               # k
-
-
-    la t0,eps_const
-    lw t3,0(t0)
-
-
-exp_loop:
-    mulh a0,s2,s0
-    mul a1,s2,s0
-
-    slli a0,a0,8
-    srli a1,a1,24
-
-    or s2,a0,a1
-
-    div s2,s2,t2
-
-    add t1,t1,s2
-
-    mv a0,s2
-
-    bgez a0,test_term
-    sub a0,zero,a0
-
-test_term:
-    bleu a0,t3,exp_end
-
-    addi t2,t2,1
-
-    li t4,30
-    blt t2,t4,exp_loop
-
-
-exp_end:
-    mv a0,t1
-
-    lw s2,0(sp)
-    lw s1,4(sp)
-    lw s0,8(sp)
-    lw ra,12(sp)
-
-    addi sp,sp,16
-
-    ret
-
-
-print_fixed:
-    mv t0,a0
-
-    la a0,output_str
-    li a7,4
+    # --- imprime "." ---
+    la   a0, ponto
+    li   a7, 4             # print_string
     ecall
 
-    li t1,6
-
-    la t2,one_const
-    lw t3,0(t2)
-
-
-print_loop:
-    li t5,10
-
-    mul t4,t0,t5
-
-    divu t6,t4,t3
-
-    remu t0,t4,t3
-
-    addi a0,t6,48
-
-    li a7,11
+    # --- imprime parte fracionária com 4 dígitos (zero-padded) ---
+    li   t3, 1000
+    div  t4, t2, t3        # milhar
+    rem  t2, t2, t3
+    li   a0, '0'
+    add  a0, a0, t4
+    li   a7, 11            # print_char
     ecall
 
-    addi t1,t1,-1
-
-    beqz t0,print_newline
-    bnez t1,print_loop
-
-
-print_newline:
-    li a0,10
-    li a7,11
+    li   t3, 100
+    div  t4, t2, t3        # centena
+    rem  t2, t2, t3
+    li   a0, '0'
+    add  a0, a0, t4
+    li   a7, 11
     ecall
 
+    li   t3, 10
+    div  t4, t2, t3        # dezena
+    rem  t2, t2, t3
+    li   a0, '0'
+    add  a0, a0, t4
+    li   a7, 11
+    ecall
+
+    li   a0, '0'
+    add  a0, a0, t2        # unidade
+    li   a7, 11
+    ecall
+
+    # --- imprime quebra de linha ---
+    la   a0, newline
+    li   a7, 4             # print_string
+    ecall
+
+    li   a7, 10            # exit
+    ecall
+
+# ------------------------------------------------------------
+# fpow: base^exp por exponenciação binária
+# entrada: fa0 = base, a0 = exp (inteiro >= 0)
+# saída:   fa0 = base^exp
+# ------------------------------------------------------------
+fpow:
+    fmv.s fa2, fa0
+    li   a1, 1
+    fcvt.s.w fa0, a1
+    mv   a2, a0
+
+fpow_loop:
+    beqz a2, fpow_done
+    andi a3, a2, 1
+    beqz a3, fpow_skip
+    fmul.s fa0, fa0, fa2
+fpow_skip:
+    fmul.s fa2, fa2, fa2
+    srli a2, a2, 1
+    j    fpow_loop
+
+fpow_done:
     ret

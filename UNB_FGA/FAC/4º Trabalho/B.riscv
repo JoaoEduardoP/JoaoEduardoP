@@ -1,72 +1,156 @@
+# ============================================================
+# Função Gama Invertida 1/Γ(z) - RISC-V (RV32IMF) para RARS
+# Fórmula de Weierstrass: 1/Γ(z) = z*e^(γz)*Π(1+z/k)e^(-z/k)
+# Saída formatada como X.XXX (3 casas decimais) + \n
+# ============================================================
+
 .data
-    str_invalido: .asciz "entrada invalida.\n"
-    str_nl:       .asciz "\n"
+gamma_const: .float 0.5772156649
+one:         .float 1.0
+eps:         .float 1e-6
+eps_exp:     .float 1e-7
+thousand:    .float 1000.0
+ponto:       .asciz "."
+newline:     .asciz "\n"
 
 .text
+.globl main
+
 main:
-    # ── Lê n ─────────────────────────────────────────────────
-    li   a7, 5
+    # --- Lê o real z ---
+    li   a7, 6           # syscall 6 = read_float
     ecall
-    mv   s0, a0              # s0 = n
+    fmv.s fs0, fa0        # fs0 = z   (callee-saved, sobrevive aos jal)
 
-    li   a7, 4
-    la   a0, str_nl
+    # --- Calcula a constante exp(gamma*z), fora do loop (não muda) ---
+    la   t0, gamma_const
+    flw  ft0, 0(t0)
+    fmul.s fa0, ft0, fs0   # fa0 = gamma*z
+    jal  exp_taylor        # fa0 = e^(gamma*z)
+    fmv.s fs1, fa0         # fs1 = exp(gamma*z)   (constante)
+
+    # --- produto = 1.0 ---
+    la   t0, one
+    flw  fs2, 0(t0)        # fs2 = produto = 1.0
+
+    li   s1, 1             # s1 = k = 1
+
+    # --- valor_anterior = z * exp(gamma*z) * produto ---
+    fmul.s fa0, fs0, fs1
+    fmul.s fa0, fa0, fs2
+    fmv.s fs3, fa0         # fs3 = valor_anterior
+
+loop:
+    # --- fator = (1 + z/k) * e^(-z/k) ---
+    fcvt.s.w fa1, s1       # fa1 = (float) k
+    fdiv.s fa2, fs0, fa1   # fa2 = z/k
+
+    la   t0, one
+    flw  ft1, 0(t0)
+    fadd.s fs6, ft1, fa2   # fs6 = 1 + z/k   (guardado em reg salvo)
+
+    fneg.s fa0, fa2         # fa0 = -z/k   (argumento para exp_taylor)
+    jal  exp_taylor          # fa0 = e^(-z/k)
+
+    fmul.s fa4, fs6, fa0     # fator = (1+z/k) * e^(-z/k)
+    fmul.s fs2, fs2, fa4     # produto *= fator
+
+    # --- valor_atual = z * exp(gamma*z) * produto ---
+    fmul.s fa0, fs0, fs1
+    fmul.s fa0, fa0, fs2
+    fmv.s fs4, fa0           # fs4 = valor_atual
+
+    # --- checa |valor_atual - valor_anterior| <= epsilon ---
+    fsub.s fa1, fs4, fs3
+    fabs.s fa1, fa1
+    la   t0, eps
+    flw  ft2, 0(t0)
+    fle.s t2, fa1, ft2
+
+    fmv.s fs3, fs4           # atualiza valor_anterior sempre
+
+    bnez t2, loop_end
+
+    addi s1, s1, 1
+    j    loop
+
+loop_end:
+    # ------------------------------------------------------
+    # --- Formatação: imprime "intpart.fff\n" (3 casas) ---
+    # ------------------------------------------------------
+    la   t0, thousand
+    flw  ft3, 0(t0)
+    fmul.s fa0, fs4, ft3     # fa0 = resultado * 1000
+
+    fcvt.w.s a0, fa0, rne    # a0 = round(resultado*1000)
+
+    li   t6, 1000
+    div  t1, a0, t6          # parte inteira
+    rem  t2, a0, t6          # parte fracionária (0..999)
+
+    mv   a0, t1
+    li   a7, 1               # print_int
     ecall
 
-    # ── Valida: n < 0 ────────────────────────────────────────
-    blt  s0, zero, invalido
-
-    # ── Valida: n >= 65536 ───────────────────────────────────
-    li   t0, 65536
-    bge  s0, t0, invalido
-
-    # ── Caso especial: n == 0 → σ1(0) = 0 ───────────────────
-    beq  s0, zero, print_result_zero
-
-    # ── Calcula σ1(n) iterando i de 1 até raiz de n ─────────────────
-    li   s1, 0               # s1 = soma acumulada
-    li   s2, 1               # s2 = i
-
-sigma_loop:
-    mul  t0, s2, s2          # t0 = i * i
-    bgt  t0, s0, sigma_done  # i*i > n → encerra
-
-    rem  t0, s0, s2          # t0 = n % i
-    bne  t0, zero, next_i    # não divide → próximo
-
-    add  s1, s1, s2          # soma i
-
-    div  t1, s0, s2          # t1 = n / i
-    beq  t1, s2, next_i      # i == n/i (quadrado perfeito) → não duplica
-    add  s1, s1, t1          # soma n/i
-
-next_i:
-    addi s2, s2, 1
-    j    sigma_loop
-
-sigma_done:
-    li   a7, 1
-    mv   a0, s1
-    ecall
-    li   a7, 4
-    la   a0, str_nl
-    ecall
-    j    sair
-
-print_result_zero:
-    li   a7, 1
-    li   a0, 0
-    ecall
-    li   a7, 4
-    la   a0, str_nl
-    ecall
-    j    sair
-
-invalido:
-    li   a7, 4
-    la   a0, str_invalido
+    la   a0, ponto
+    li   a7, 4                # print_string
     ecall
 
-sair:
-    li   a7, 10
+    # --- 3 dígitos fracionários, zero-padded ---
+    li   t3, 100
+    div  t4, t2, t3           # centena
+    rem  t2, t2, t3
+    li   a0, '0'
+    add  a0, a0, t4
+    li   a7, 11                # print_char
     ecall
+
+    li   t3, 10
+    div  t4, t2, t3            # dezena
+    rem  t2, t2, t3
+    li   a0, '0'
+    add  a0, a0, t4
+    li   a7, 11
+    ecall
+
+    li   a0, '0'
+    add  a0, a0, t2            # unidade
+    li   a7, 11
+    ecall
+
+    la   a0, newline
+    li   a7, 4                  # print_string
+    ecall
+
+    li   a7, 10                  # exit
+    ecall
+
+# ------------------------------------------------------------
+# exp_taylor: calcula e^x via série de Taylor
+#   entrada:  fa0 = x
+#   saída:    fa0 = e^x
+#   usa: fa0-fa5, ft3 (sem necessidade de preservar regs salvos)
+# ------------------------------------------------------------
+exp_taylor:
+    fmv.s ft3, fa0          # ft3 = x  (guarda o argumento original)
+
+    la   t0, one
+    flw  fa1, 0(t0)          # fa1 = term = 1.0
+    flw  fa0, 0(t0)          # fa0 = result = 1.0
+    li   t1, 0                # t1 = n = 0
+
+exp_loop:
+    addi t1, t1, 1
+    fcvt.s.w fa3, t1          # fa3 = (float) n
+
+    fmul.s fa1, fa1, ft3      # term *= x
+    fdiv.s fa1, fa1, fa3       # term /= n
+    fadd.s fa0, fa0, fa1       # result += term
+
+    fabs.s fa4, fa1
+    la   t2, eps_exp
+    flw  fa5, 0(t2)
+    fle.s t3, fa4, fa5
+    beqz t3, exp_loop
+
+    ret
