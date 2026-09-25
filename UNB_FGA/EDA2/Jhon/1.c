@@ -42,7 +42,7 @@ int main(){
         if (novo) {
                 letras[indice].letra = sequencia[i];
                 letras[indice].posicao = i;
-                letras[indice].quantidade++;
+                letras[indice].quantidade = 1;
                 indice++;
         }
     

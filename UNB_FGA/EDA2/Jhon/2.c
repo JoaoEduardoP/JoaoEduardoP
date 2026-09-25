@@ -21,13 +21,14 @@ static int comparaCodigo(const void *a, const void *b) {
     const Semente *s2 = (Semente *) b;
     return (s1->codigo > s2->codigo) - (s1->codigo < s2->codigo);
 }
+
 int main(){
 
     int possivel_Amostra = 10000000;
     int quantidade_Filtro = 0;
     int quantidade_Real = 0;
 
-    Semente *sementes = malloc( possivel_Amostra *sizeof(Semente));
+    Semente *sementes = malloc( possivel_Amostra * sizeof(Semente));
 
     scanf("%d", &quantidade_Filtro);
 
@@ -44,7 +45,6 @@ int main(){
     for (int i = 0; i < saida; i++) {
         printf("%llu %d\n", sementes[i].codigo, sementes[i].nota);
     }
-
 
     free(sementes);
     return 0;

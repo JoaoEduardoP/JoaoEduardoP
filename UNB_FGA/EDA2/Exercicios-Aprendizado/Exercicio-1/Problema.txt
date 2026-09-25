@@ -1,0 +1,54 @@
+Exercício: Triagem de Pronto-Socorro
+
+Um hospital está processando uma triagem de emergência. Cada paciente é registrado com:
+
+Código do prontuário: um número inteiro grande, único, não-negativo (unsigned long long)
+Gravidade: um número inteiro (int, pode ser negativo) — quanto menor, mais grave o caso, e portanto maior a prioridade de atendimento
+
+O hospital só tem capacidade para atender k pacientes nesta rodada. Você deve:
+
+Selecionar os k pacientes mais graves (menor valor de gravidade).
+Em caso de empate na gravidade, prioriza-se o paciente de menor código de prontuário (chegou primeiro no sistema).
+Se houver menos pacientes que k no total, selecione todos.
+Ao final, para fins de arquivamento, imprima os pacientes selecionados ordenados por código de prontuário crescente (não por gravidade).
+Entrada
+A primeira linha contém um inteiro k.
+As linhas seguintes contêm pares codigo gravidade, um por linha, até o fim da entrada (EOF) — não é informado quantos pacientes existem.
+Saída
+
+Imprima os pacientes selecionados, um por linha, no formato:
+
+codigo gravidade
+
+ordenados por codigo crescente.
+
+Restrições sugeridas (para você simular o cenário de alto desempenho)
+Até 10.000.000 pacientes podem ser informados na entrada.
+codigo cabe em unsigned long long.
+gravidade cabe em int (pode ser negativa).
+k pode ser maior que o total de pacientes informados.
+Exemplo
+
+Entrada:
+
+3
+500 10
+100 5
+300 5
+200 8
+400 20
+
+Saída:
+
+100 5
+200 8
+300 5
+
+Por quê: as três gravidades mais baixas são 5, 5, 8 (pacientes 100, 300 e 200). O paciente 400 (gravidade 20) e 500 (gravidade 10) ficam de fora. A impressão final é ordenada por código: 100, 200, 300.
+
+O que eu quero que você pratique
+
+Tente implementar duas versões, para fixar os dois conceitos discutidos:
+
+Versão simples: dois qsort (um por gravidade+desempate, outro por código) — igual à segunda abordagem que analisamos.
+Versão otimizada (opcional, se quiser ir além): usando quickselect para selecionar os k mais graves em O(n), e só depois um qsort para ordenar por código — igual à primeira abordagem.
